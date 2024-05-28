@@ -118,7 +118,7 @@ def thing(image):
         # add the unwarped image and the orginal image ontop of each other
         finished = cv.addWeighted(image, 0.5, unwarped, 0.5, 0.0)
 
-        return finished
+        return finished, maxx
 
 # Root Menu for user registration and login
 root = tk.Tk()
@@ -225,6 +225,7 @@ def generateCoordinates(frame, parameters):
 
 # Function to visualize the lines on the frame, including the centerline
 def showLines(frame, lines):
+    mid_x = 0
     try:
         if lines is not None:
             for x1, y1, x2, y2 in lines:
@@ -235,12 +236,13 @@ def showLines(frame, lines):
             center_line = (left_line + right_line) // 2
             x1, y1, x2, y2 = center_line
             cv.line(frame, (x1, y1), (x2, y2), (0, 0, 255), 5)  # Draw centerline in red
+            mid_x = (x1+x2)/2
 
     except Exception as e:
         print(f"Error in showLines: {e}")
         # Optionally, log this error or take other appropriate actions
 
-    return frame
+    return frame, mid_x
 
 def load_video_raw(currentState, userName, frame, stop_event):
     global webcam, webcam_lock
@@ -335,13 +337,23 @@ def load_video_processed(currentState, userName, frame, stop_event):
                 lines = generateLines(original_frame, hough)  # Pass the original frame to generateLines
                 if lines is not None:
                     #processed_frame = showLines(overlay, lines)  # Draw lines on the overlay
-                    processed_frame = showLines(original_frame, lines)  # Draw lines on the origianl 
+                    processed_frame, mid_x_s = showLines(original_frame, lines)  # Draw lines on the origianl 
                 else:
                     #processed_frame = overlay  # If no lines are detected, use the overlay frame
                     processed_frame = original_frame  # If no lines are detected, use the orginal frame                    
-                processed_frame = thing(processed_frame)
+                processed_frame, mid_x_c = thing(processed_frame)
                 processed_frame = detect_vertical_lines(processed_frame)
                 processed_frame = detect_obstacle(processed_frame)
+
+                mid_x = (mid_x_c + mix_x_s)/2
+
+                width = frame.shape[1]
+                    if mid_x < width // 2:
+                        cv2.putText(image, "turn left", (10, 100), cv2.FONT_HERSHEY_SIMPLEX, 1, (255, 255, 255), 2)
+                    elif mid_x == width // 2:
+                        cv2.putText(image, "forwards", (10, 120), cv2.FONT_HERSHEY_SIMPLEX, 1, (255, 255, 255), 2)
+                    else:
+                        cv2.putText(image, "turn left", (10, 100), cv2.FONT_HERSHEY_SIMPLEX, 1, (255, 255, 255), 2)
 
                 rgb_frame = cv.cvtColor(processed_frame, cv.COLOR_BGR2RGB)
                 rgb_frame = cv.resize(rgb_frame, (256, 256))
