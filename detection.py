@@ -284,12 +284,12 @@ def detect_vertical_lines(frame):
                     # Put a label "Obstacle" near the detected line
                     cv.putText(frame, 'Obstacle', (x1, y1 - 10), cv.FONT_HERSHEY_SIMPLEX, 0.5, (0, 255, 0), 2)
     return frame  # Return the frame with detected lines highlighted
-cascade_src = 'cars.xml'
+cascade_src = 'obstacle.xml'
 car_cascade = cv2.CascadeClassifier(cascade_src)
-def detect_cars(frame):
+def detect_obstacle(frame):
     gray = cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY)
-    cars = car_cascade.detectMultiScale(gray, 1.1, 1)
-    for (x, y, w, h) in cars:
+    obstacle = car_cascade.detectMultiScale(gray, 1.1, 1)
+    for (x, y, w, h) in obstacle:
         cv2.rectangle(frame, (x, y), (x + w, y + h), (0, 0, 255), 2)
     return frame
 
@@ -341,7 +341,7 @@ def load_video_processed(currentState, userName, frame, stop_event):
                     processed_frame = original_frame  # If no lines are detected, use the orginal frame                    
                 processed_frame = thing(processed_frame)
                 processed_frame = detect_vertical_lines(processed_frame)
-                processed_frame = detect_cars(processed_frame)
+                processed_frame = detect_obstacle(processed_frame)
 
                 rgb_frame = cv.cvtColor(processed_frame, cv.COLOR_BGR2RGB)
                 rgb_frame = cv.resize(rgb_frame, (256, 256))
