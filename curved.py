@@ -112,7 +112,7 @@ def thing(image):
   finished = cv2.addWeighted(image, 0.5, unwarped, 0.5, 0.0)
   cv2.imshow("finished", finished)
   return maxx
-vid = cv2.VideoCapture("IMG_2988.MOV")
+  
 while True:
   ret, frame = vid.read()
   if frame is None:
