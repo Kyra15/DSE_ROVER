@@ -63,6 +63,7 @@ def thing(image):
       matrixy = cv2.getPerspectiveTransform(mask_vert, screen_vert)
       result = cv2.warpPerspective(image, matrixy, (image.shape[1], image.shape[0]))
       return result
+    
   height = image.shape[0]  # 1080
   global width
   width = image.shape[1]  # 1920
@@ -103,8 +104,6 @@ def thing(image):
           if point[1] > maxy:
               maxx = point[0]
       middle = np.array(middle, dtype=np.int32)
-
-
       cv2.polylines(warped_image, [middle], False, (0, 255, 255), 15)
 
   unwarped = unwarped(warped_image, np.float32(mask_vertices), screen_verts)
@@ -130,4 +129,3 @@ while True:
       break
 vid.release()
 cv2.destroyAllWindows()
-
