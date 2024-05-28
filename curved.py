@@ -1,5 +1,4 @@
 # importing packages and modules
-import pandas as pd
 import numpy as np
 import cv2
 import math
